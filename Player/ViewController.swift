@@ -41,34 +41,20 @@ class ViewController: UIViewController {
 // MARK: -
 
   func loadFile() {
-    let fm = FileManager.default
-    do {
-      print("\(documentsURL)") // for debugging
-      let dirFiles = try fm.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil, options: [
-        .skipsSubdirectoryDescendants,
-        .skipsPackageDescendants,
-        .skipsHiddenFiles,
-        .producesRelativePathURLs] )
-      let extensions = ["m4v", "mov", "MOV"]
-      for file: URL in dirFiles {
-        if extensions.contains(file.pathExtension)  {
-          fileURL = file
-          player = AVPlayer(url: file)
-          moviePlayer = LandscapeAVPlayerController()
-          if let player = player,
-              let moviePlayer = moviePlayer{
-           moviePlayer.showsPlaybackControls = false
-           moviePlayer.entersFullScreenWhenPlaybackBegins = true
-           moviePlayer.videoGravity = .resizeAspectFill
-           moviePlayer.player = player
-            present(moviePlayer, animated: true) {
-              player.play()
-            }
-          }
-          break;
-        }
+    guard let fileURL = Bundle.main.url(forResource: "nook", withExtension: "mp4") else {
+      return
+    }
+    player = AVPlayer(url: fileURL)
+    moviePlayer = LandscapeAVPlayerController()
+    if let player = player,
+       let moviePlayer = moviePlayer{
+      moviePlayer.showsPlaybackControls = false
+      moviePlayer.entersFullScreenWhenPlaybackBegins = true
+      moviePlayer.videoGravity = .resizeAspectFill
+      moviePlayer.player = player
+      present(moviePlayer, animated: true) {
+        player.play()
       }
-    } catch {
     }
   }
 
