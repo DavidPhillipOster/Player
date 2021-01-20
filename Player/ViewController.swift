@@ -19,6 +19,8 @@ class ViewController: UIViewController {
   var fileURL: URL?
   var moviePlayer: AVPlayerViewController?
   var player: AVPlayer?
+  var isResigning = false
+  var hasViewAppeared = false
   lazy var documentsURL: URL = {
     FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
   }()
@@ -34,18 +36,30 @@ class ViewController: UIViewController {
     let nc = NotificationCenter.default
     let q = OperationQueue.main
     nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: q) { [weak self] _ in
-      self?.loadFile()
+      if let self = self {
+        self.loadFile()
+        if self.hasViewAppeared {
+          self.playPlayer()
+        }
+      }
     }
     nc.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: q) { [weak self] _ in
-      self?.moviePlayer?.dismiss(animated: false){ [weak self] in
-        self?.moviePlayer = nil
+      if let self = self {
+        self.isResigning = true
+        self.moviePlayer?.dismiss(animated: false){ [weak self] in
+          if let self = self {
+            self.moviePlayer = nil
+            self.isResigning = false
+          }
+        }
       }
     }
   }
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    playPlayer()
+    if !isResigning { playPlayer() }
+    hasViewAppeared = true
   }
 
 // MARK: -
