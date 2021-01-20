@@ -29,3 +29,6 @@ In the source code, you can edit the legal list of file extensions.
 
 Set the bundle ID to your bundle ID. Adjust the code signing.
 
+## Versions
+
+1.0.1 - 1/20/2021 fix bug where leaving the app and coming back in would crash.

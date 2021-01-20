@@ -36,26 +36,39 @@ class ViewController: UIViewController {
     nc.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: q) { [weak self] _ in
       self?.loadFile()
     }
+    nc.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: q) { [weak self] _ in
+      self?.moviePlayer?.dismiss(animated: false){ [weak self] in
+        self?.moviePlayer = nil
+      }
+    }
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    playPlayer()
   }
 
 // MARK: -
+  func playPlayer(){
+    if let player = player {
+      moviePlayer = LandscapeAVPlayerController()
+      if let moviePlayer = moviePlayer{
+        moviePlayer.showsPlaybackControls = false
+        moviePlayer.entersFullScreenWhenPlaybackBegins = true
+        moviePlayer.videoGravity = .resizeAspectFill
+        moviePlayer.player = player
+        present(moviePlayer, animated: true) {
+          player.play()
+        }
+      }
+    }
+  }
 
   func loadFile() {
     guard let fileURL = Bundle.main.url(forResource: "nook", withExtension: "mp4") else {
       return
     }
     player = AVPlayer(url: fileURL)
-    moviePlayer = LandscapeAVPlayerController()
-    if let player = player,
-       let moviePlayer = moviePlayer{
-      moviePlayer.showsPlaybackControls = false
-      moviePlayer.entersFullScreenWhenPlaybackBegins = true
-      moviePlayer.videoGravity = .resizeAspectFill
-      moviePlayer.player = player
-      present(moviePlayer, animated: true) {
-        player.play()
-      }
-    }
   }
 
 }
